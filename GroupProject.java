@@ -368,4 +368,38 @@ public class GroupProject {
         }
         System.out.println("Returning to Admin Menu");
     }
+	static void newResidentConfirmation(){
+		Scanner console = new Scanner(System.in);
+		System.out.println("You have been matched with a unit!");
+		System.out.println("Please enter a username: ");
+		String username = console.nextLine();
+		System.out.println("Please enter a password: ");
+		String password = console.nextLine();
+		System.out.println("You may now login as a resident.");
+		residentLogin(username, password);
+
+	}
+	static void residentLogin(String user, String pass){
+		Scanner console = new Scanner(System.in);
+		System.out.println("*******************************");
+		System.out.println("       Resident Portal");
+		System.out.println("*******************************");
+		System.out.println("1. Submit maintenance request");
+		System.out.println("2. Check status of maintenance request");
+		System.out.println("3. View completed maintenance requests");
+		System.out.println("4. Quit");
+		System.out.println("What would you like to do: ");
+		String choice;
+		do{
+			System.out.println("What would you like to do: ");
+			choice = console.next();
+			if(true == choice.equals("1")){
+				System.out.println("You have chosen to submit a maintenance request.");
+			}else if(true == choice.equals("2")){
+				System.out.println("You have chosen to check the status of a maintenance request.");
+			}else if(true == choice.equals("3")){
+				System.out.println("You have chosen to view completed maintenance requests.");
+			}
+		}while(false == choice.equals("4"));
+	}
 }
