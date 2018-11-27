@@ -1,6 +1,6 @@
 
 import java.sql.*;
-import java.util.Scanner;
+import java.util.*;
 import java.io.*;
 
 public class GroupProject {
@@ -8,13 +8,12 @@ public class GroupProject {
         Connection conn = null;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            String url = "jdbc:mysql://localhost:3306/Student_Housing?serverTimezone=UTC&useSSL=TRUE";
+            String url = "jdbc:mysql://localhost:3306/ProjectAssignment?serverTimezone=UTC&useSSL=TRUE";
             String user, pass;
             user = readEntry("UserId: ");
             pass = readEntry("Password: ");
             conn = DriverManager.getConnection(url, user, pass);
             
-            //bookingRequest("77884455",conn);
             mainMenu(conn);
             
         }
@@ -67,11 +66,6 @@ public class GroupProject {
         while(false==choice.equals("4")){
         	if(true==choice.equals("1")){
         		System.out.println("You've chosen Resident Login.");
-        		System.out.print("Enter username: ");
-        		String username = console.next();
-        		System.out.print("Enter password: ");
-        		String password = console.next();
-        		residentLogin(username, password);
         	}else if(true==choice.equals("2")){
         		System.out.println("Please enter R if you are currently an applicant, or N to create a new applicant account.");
         		choice=console.nextLine().toUpperCase();
@@ -216,6 +210,10 @@ public class GroupProject {
                 checkUnitAvailability(conn);
         	}else if(true==choice.equals("2")){
         		System.out.println("You've chosen Submit Booking Requests");
+        		int x=bookingRequest(aID,conn);
+        		if(x==1){
+        			break;
+        		}
         	}else{ //If user did not put in a valid entry
         		System.out.println("There is no action matching that input.");
         	}
@@ -268,7 +266,7 @@ public class GroupProject {
     	}
     }
     
-    static void bookingRequest(String ID, Connection conn){
+    static int bookingRequest(String ID, Connection conn){
     	try{
     		String query0 = "select spouse_id from person where student_id = ?";
     		PreparedStatement p0 = conn.prepareStatement (query0);
@@ -283,24 +281,128 @@ public class GroupProject {
     		PreparedStatement p = conn.prepareStatement (query);
     		ResultSet r = p.executeQuery();
     		System.out.println("The available building ands unit types are: ");
-    		int[] types=new int[20];
+    		String[] types=new String[20];
     		int position=0;
     		while(r.next()){
     			int build=r.getInt(1);
-    			int type=r.getInt(2);
+    			String type=r.getString(2);
     			types[position]=type;
     			System.out.println(build+", "+type);
+    			position++;
     		}
-    		String query2 = "insert into unit preference values (?,1,?)";
+    		String query2 = "insert into unit_preference values (?,1,?)";
     		PreparedStatement p2 = conn.prepareStatement (query2);
     		System.out.println("Please enter the ID of the unit type you would like to book: ");
     		String choice=console.next();
-    		if((false==spouseID.equals(""))&&(false==choice.equals("4"))||false==choice.equals("6"));
+    		if(spouseID==null&&false==choice.equals("4")&&false==choice.equals("6")){
+    			System.out.println("Married students may only apply for unit types 4 and 6");
+    			return 0;
+    		}else if(false==Arrays.asList(types).contains(choice)){
+    			System.out.println("That unit type is not available");
+    			p2.setString(1,ID);
+    			p2.setString(2,choice);
+    			System.out.println(p2);
+    			p2.executeUpdate();
+    			System.out.println("Your request has been filed in case of a future opening.");
+    			return 0;
+    		}else{
+    			System.out.println("Success!");
+    			applicantToResident(ID,conn,choice);
+    			System.out.println("You have succesfully booked an apartment, and are now a resident!");
+    			System.out.println("Please login as a resident from the main menu.");
+    			return 1;
+    		}
+    	}catch(SQLException ex){
+    		System.out.println(ex);
+    		return 0;
+    	}
+    }
+    static void applicantToResident(String ID, Connection conn,String choice){
+    	String address=changeAddress(conn,ID,choice);
+    	changeVacantDate(conn,address);
+    	addResident(conn,ID,address);
+    	removeApplicant(conn,ID);
+    	removeUnitPreferences(conn,ID);
+    }
+    
+    static String changeAddress(Connection conn, String ID, String choice){
+    	try{
+    		String query = "select address from unit where unit_type= ? and vacant_date<NOW();";
+    		PreparedStatement p = conn.prepareStatement (query);
+    		p.setString(1, choice);
+    		ResultSet r = p.executeQuery();
+    		r.next();
+    		String aAddress=r.getString(1);
+    		String query2="update person set address= ? where student_id=?";
+    		PreparedStatement p2 = conn.prepareStatement (query2);
+    		p2.setString(1, aAddress);
+    		p2.setString(2, ID);
+    		p2.executeUpdate();
+    		return aAddress;
+    	}catch(SQLException ex){
+    		System.out.println("test1");
+    		return null;
+    	}
+    }
+    
+    static void changeVacantDate(Connection conn, String address){
+    	try{
+    		String query="update unit set vacant_date= date_add(curdate(), interval 3 MONTH) where address=?";
+    		PreparedStatement p = conn.prepareStatement (query);
+    		p.setString(1, address);
+    		p.executeUpdate();
+    	}catch(SQLException ex){
+    		System.out.println("test2");
+    	}
+    }
+    
+    static void addResident(Connection conn, String ID, String address){
+    	try{
+    		String query="select unit_price from unit_type where type_id in(select unit_type from unit where address= ?)";
+    		PreparedStatement p = conn.prepareStatement (query);
+    		p.setString(1, address);
+    		ResultSet r = p.executeQuery();
+    		r.next();
+    		String price=r.getString(1);
+    		String query3="select password from applicant where applicant_id=?";
+    		PreparedStatement p3 = conn.prepareStatement (query3);
+    		p3.setString(1, ID);
+    		ResultSet r3 = p3.executeQuery();
+    		r3.next();
+    		String password=r3.getString(1);
+    		String query2="insert into resident values(?,0,?,?)";
+    		PreparedStatement p2 = conn.prepareStatement (query2);
+    		p2.setString(1, ID);
+    		p2.setString(2, price);
+    		p2.setString(3, password);
+    		p2.executeUpdate();
+    	}catch(SQLException ex){
+    		System.out.println("test3");
+    	}
+    }
+    
+    static void removeApplicant(Connection conn, String ID){
+    	try{
+    		String query = "delete from applicant where applicant_id=?";
+    		PreparedStatement p = conn.prepareStatement (query);
+    		p.setString(1,ID);
+    		p.executeUpdate();
     	}catch(SQLException ex){
     		System.out.println(ex);
     	}
-		
     }
+    
+    static void removeUnitPreferences(Connection conn, String ID){
+    	try{
+    		String query = "delete from unit_preference where applicant_id=?";
+    		PreparedStatement p = conn.prepareStatement (query);
+    		p.setString(1,ID);
+    		p.executeUpdate();
+    	}catch(SQLException ex){
+    		System.out.println(ex);
+    	}
+    }
+    
     //Prints the admin menu
     static void printAdminMenu(){
     	System.out.println("***********************************************************");
@@ -373,37 +475,4 @@ public class GroupProject {
         }
         System.out.println("Returning to Admin Menu");
     }
-	static void newResidentConfirmation(){
-		Scanner console = new Scanner(System.in);
-		System.out.println("You have been matched with a unit!");
-		System.out.println("Please enter a username: ");
-		String username = console.nextLine();
-		System.out.println("Please enter a password: ");
-		String password = console.nextLine();
-		System.out.println("You may now login as a resident.");
-		residentLogin(username, password);
-
-	}
-	static void residentLogin(String user, String pass){
-		Scanner console = new Scanner(System.in);
-		String choice;
-		do{
-			System.out.println("*******************************");
-			System.out.println("       Resident Portal");
-			System.out.println("*******************************");
-			System.out.println("1. Submit maintenance request");
-			System.out.println("2. Check status of maintenance request");
-			System.out.println("3. View completed maintenance requests");
-			System.out.println("4. Quit");
-			System.out.print("What would you like to do: ");
-			choice = console.next();
-			if(true == choice.equals("1")){
-				System.out.println("You have chosen to submit a maintenance request.");
-			}else if(true == choice.equals("2")){
-				System.out.println("You have chosen to check the status of a maintenance request.");
-			}else if(true == choice.equals("3")){
-				System.out.println("You have chosen to view completed maintenance requests.");
-			}
-		}while(false == choice.equals("4"));
-	}
 }
