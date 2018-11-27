@@ -8,13 +8,13 @@ public class GroupProject {
         Connection conn = null;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            String url = "jdbc:mysql://localhost:3306/ProjectAssignment?serverTimezone=UTC&useSSL=TRUE";
+            String url = "jdbc:mysql://localhost:3306/Student_Housing?serverTimezone=UTC&useSSL=TRUE";
             String user, pass;
             user = readEntry("UserId: ");
             pass = readEntry("Password: ");
             conn = DriverManager.getConnection(url, user, pass);
             
-            bookingRequest("77884455",conn);
+            //bookingRequest("77884455",conn);
             mainMenu(conn);
             
         }
@@ -67,6 +67,11 @@ public class GroupProject {
         while(false==choice.equals("4")){
         	if(true==choice.equals("1")){
         		System.out.println("You've chosen Resident Login.");
+        		System.out.print("Enter username: ");
+        		String user = console.next();
+        		System.out.print("Enter password: ");
+        		String pass = console.next();
+        		residentLogin(user, pass);
         	}else if(true==choice.equals("2")){
         		System.out.println("Please enter R if you are currently an applicant, or N to create a new applicant account.");
         		choice=console.nextLine().toUpperCase();
@@ -381,17 +386,16 @@ public class GroupProject {
 	}
 	static void residentLogin(String user, String pass){
 		Scanner console = new Scanner(System.in);
-		System.out.println("*******************************");
-		System.out.println("       Resident Portal");
-		System.out.println("*******************************");
-		System.out.println("1. Submit maintenance request");
-		System.out.println("2. Check status of maintenance request");
-		System.out.println("3. View completed maintenance requests");
-		System.out.println("4. Quit");
-		System.out.println("What would you like to do: ");
 		String choice;
 		do{
-			System.out.println("What would you like to do: ");
+			System.out.println("*******************************");
+			System.out.println("       Resident Portal");
+			System.out.println("*******************************");
+			System.out.println("1. Submit maintenance request");
+			System.out.println("2. Check status of maintenance request");
+			System.out.println("3. View completed maintenance requests");
+			System.out.println("4. Quit");
+			System.out.print("What would you like to do: ");
 			choice = console.next();
 			if(true == choice.equals("1")){
 				System.out.println("You have chosen to submit a maintenance request.");
