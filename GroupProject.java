@@ -68,10 +68,10 @@ public class GroupProject {
         	if(true==choice.equals("1")){
         		System.out.println("You've chosen Resident Login.");
         		System.out.print("Enter username: ");
-        		String username = console.next();
+        		String user = console.next();
         		System.out.print("Enter password: ");
-        		String password = console.next();
-        		residentLogin(username, password);
+        		String pass = console.next();
+        		residentLogin(user, pass);
         	}else if(true==choice.equals("2")){
         		System.out.println("Please enter R if you are currently an applicant, or N to create a new applicant account.");
         		choice=console.nextLine().toUpperCase();
