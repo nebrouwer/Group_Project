@@ -8,7 +8,7 @@ public class GroupProject {
         Connection conn = null;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            String url = "jdbc:mysql://localhost:3306/Student_Housing?serverTimezone=UTC&useSSL=TRUE";
+            String url = "jdbc:mysql://localhost:3306/project?serverTimezone=UTC&useSSL=TRUE";
             String user, pass;
             user = readEntry("UserId: ");
             pass = readEntry("Password: ");
@@ -91,7 +91,7 @@ public class GroupProject {
         		}
         	}else if(true==choice.equals("3")){
         		System.out.println("You've chosen Admin");
-        		adminMenu();
+        		adminMenu(conn);
         	}else{ //If user did not put in a valid entry
         		System.out.println("There is no action matching that input.");
         	}
@@ -316,7 +316,7 @@ public class GroupProject {
         System.out.print("Please enter the action you wish to take: ");
     }
     //Prints options available for administrators and takes input for which option to perform
-    static void adminMenu(){
+    static void adminMenu(Connection conn){
     	Scanner console=new Scanner(System.in);
     	printAdminMenu();
     	String choice=console.nextLine();
@@ -331,7 +331,7 @@ public class GroupProject {
         		System.out.println("You've chosen Manage Maintenance Orders");
         	}else if(true==choice.equals("5")){
         		System.out.println("You've chosen Administrative Reports");
-        		adminReportsMenu();
+        		adminReportsMenu(conn);
         	}else{ //If user did not put in a valid entry
         		System.out.println("There is no action matching that input.");
         	}
@@ -352,25 +352,38 @@ public class GroupProject {
         System.out.println("5. Quit");
         System.out.print("Please enter the action you wish to take: ");
     }
-    static void adminReportsMenu(){
+    static void adminReportsMenu(Connection conn){
     	Scanner console=new Scanner(System.in);
     	printAdminReportsMenu();
     	String choice=console.nextLine();
-        while(false==choice.equals("5")){
-        	if(true==choice.equals("1")){
-        		System.out.println("You've chosen Housing Department Reports.");
-        	}else if(true==choice.equals("2")){
-        		System.out.println("You've chosen Applicants Reports");
-        	}else if(true==choice.equals("3")){
-        		System.out.println("You've chosen Residents Reports");
-        	}else if(true==choice.equals("4")){
-        		System.out.println("You've chosen Maintenance Department Reports");
-        	}else{ //If user did not put in a valid entry
-        		System.out.println("There is no action matching that input.");
-        	}
-        	printAdminReportsMenu();
-        	choice=console.nextLine();
-        }
+        try{
+			while(false==choice.equals("5")){
+				if(true==choice.equals("1")){
+					System.out.println("You've chosen Housing Department Reports.");
+				}else if(true==choice.equals("2")){
+					//System.out.println("You've chosen Applicants Reports");
+					applicantReport(conn);
+				}else if(true==choice.equals("3")){
+					System.out.println("You've chosen Residents Reports");
+				}else if(true==choice.equals("4")){
+					System.out.println("You've chosen Maintenance Department Reports");
+				}else{ //If user did not put in a valid entry
+					System.out.println("There is no action matching that input.");
+				}
+				printAdminReportsMenu();
+				choice=console.nextLine();
+			}
+		} catch (SQLException ex) {
+			System.out.println(ex);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) { /* ignored */}
+			}
+		}
         System.out.println("Returning to Admin Menu");
     }
 	static void newResidentConfirmation(){
@@ -405,5 +418,43 @@ public class GroupProject {
 				System.out.println("You have chosen to view completed maintenance requests.");
 			}
 		}while(false == choice.equals("4"));
+	}
+	static void applicantReport(Connection conn) throws SQLException, IOException{
+		Scanner console=new Scanner(System.in);
+		String semester;
+		System.out.println("Please enter a semester date (YYYYMMDD): ");
+		semester = console.nextLine();
+
+		Statement stmt = conn.createStatement();
+		String query =  "SELECT person.name, person.address " +
+				"FROM project.person, project.applicant " +
+				"WHERE student_id = applicant_id " +
+				"AND application_date <= \'" + semester + "\';";
+		ResultSet rset;
+		rset = stmt.executeQuery(query);
+
+
+		try {
+			rset = stmt.executeQuery(query);
+		} catch (SQLException e) {
+			System.out.println("could not execute query ");
+			while (e!= null) {
+				System.out.println ("Message  :" + e.getMessage());
+				e = e.getNextException();
+			}
+			stmt.close();
+			return;
+		}
+
+		System.out.println("APPLICANT NAMES AND ADDRESSES FOR NEXT SEMESTER");
+		System.out.println("--------------------------------------------------");
+
+		while(rset.next())
+		{
+			System.out.print(rset.getString(1) + " ");
+			System.out.println(rset.getString(2));
+		}
+		stmt.close();
+
 	}
 }
