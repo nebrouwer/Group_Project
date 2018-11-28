@@ -272,9 +272,9 @@ public class Project_v4 {
     		PreparedStatement p0 = conn.prepareStatement (query0);
     		p0.setString(1, ID);
     		ResultSet r0=p0.executeQuery();
-    		String spouseID="";
+    		String spouse_id="";
     		while(r0.next()){
-    			spouseID=r0.getString(1);
+    			spouse_id=r0.getString(1);
     		}
     		Scanner console=new Scanner(System.in);
     		String query = "select building_num, unit_type from unit where vacant_date<NOW();";
@@ -294,7 +294,7 @@ public class Project_v4 {
     		PreparedStatement p2 = conn.prepareStatement (query2);
     		System.out.println("Please enter the ID of the unit type you would like to book: ");
     		String choice=console.next();
-    		if(spouseID==null&&false==choice.equals("4")&&false==choice.equals("6")){
+    		if(spouse_id!=null&&false==choice.equals("4")&&false==choice.equals("6")){
     			System.out.println("Married students may only apply for unit types 4 and 6");
     			return 0;
     		}else if(false==Arrays.asList(types).contains(choice)){
@@ -377,7 +377,7 @@ public class Project_v4 {
     		p2.setString(3, password);
     		p2.executeUpdate();
     	}catch(SQLException ex){
-    		System.out.println("test3");
+    		System.out.println(ex);
     	}
     }
     
