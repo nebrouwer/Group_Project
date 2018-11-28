@@ -206,8 +206,8 @@ public class Project_v4 {
         while(false==choice.equals("3")){
         	if(true==choice.equals("1")){
         		System.out.println("**You've chosen Check Available Units**");
-        		printUnitTypes(conn);
-                checkUnitAvailability(conn);
+        		//printUnitTypes(conn);
+        		checkUnitAvailability(conn);
         	}else if(true==choice.equals("2")){
         		System.out.println("You've chosen Submit Booking Requests");
         		int x=bookingRequest(aID,conn);
@@ -246,11 +246,11 @@ public class Project_v4 {
     
     static void checkUnitAvailability(Connection conn){
     	try{
-    		String query = "select * from unit where unit_type= ? and vacant_date<NOW();";
+    		String query = "select * from unit where vacant_date < NOW()";
     		PreparedStatement p = conn.prepareStatement (query);
-    		String id = readEntry("Enter the ID of the apartment type you would like to search for: ");
-    		p.clearParameters();
-    		p.setString(1,id);
+    		//String id = readEntry("Enter the ID of the apartment type you would like to search for: ");
+    		//p.clearParameters();
+    		//p.setString(1, id);
     		ResultSet r = p.executeQuery();
     		System.out.println("**Address, Building #, Unit ID, Apt #, Vacant Date**");
     		while (r.next ()) {
