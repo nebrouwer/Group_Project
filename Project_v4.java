@@ -72,7 +72,11 @@ public class Project_v4 {
         		if(true==choice.equals("R")){
         			System.out.println("**Returning Applicant**");
         			String aID=applicantLogin(conn);
-        			applicantMenu(aID,conn);
+        			if(aID!=null){
+        				applicantMenu(aID,conn);
+        			}else{
+        				System.out.println("Could not find an account matching that user name and password.");
+        			}
         		}else if(true==choice.equals("N")){
         			System.out.println("**New Applicant**");
         			String ID = newPerson(conn);
@@ -105,7 +109,7 @@ public class Project_v4 {
     		p.setString(1,id);
     		p.setString(2, password);
     		ResultSet r = p.executeQuery();
-    		String aid="";
+    		String aid=null;
     		while (r.next ()) {
     			aid = r.getString(1);
     			System.out.println("Thank You for logging in.");
