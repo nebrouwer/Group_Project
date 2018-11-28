@@ -155,7 +155,7 @@ public class Project_v4 {
     		p.setString(9, fh_id);
     		p.setString(10, major);
     		p.executeUpdate();
-    		System.out.println("Your information has been succesfully entered into the database");
+    		System.out.println("Your information has been successfully entered into the database");
     		return student_id;
     	}catch(SQLException ex) { 
             System.out.println("There was a problem entering your data");
@@ -169,10 +169,10 @@ public class Project_v4 {
     		String query = "insert into applicant values (?,?,curdate(),0,?)";
     		PreparedStatement p = conn.prepareStatement (query);
     		String roommate_id=null;
-    		System.out.println("Do you have a prefered roommate? (Y or N)");
+    		System.out.println("Do you have a preferred roommate? (Y or N)");
     		String yON=console.next();
     		if(true==yON.equals("Y")){
-    			roommate_id=readEntry("Please enter your prefered roommates student ID: ");
+    			roommate_id=readEntry("Please enter your preferred roommates student ID: ");
     		}
     		String password = readEntry("Please choose a password: ");
     		p.clearParameters();
@@ -180,7 +180,7 @@ public class Project_v4 {
     		p.setString(2, roommate_id);
     		p.setString(3, password);
     		p.executeUpdate();
-    		System.out.println("Your account has been succesfully created.");
+    		System.out.println("Your account has been successfully created.");
     	}catch(SQLException ex) { 
             System.out.println(ex);
     	}
@@ -308,7 +308,7 @@ public class Project_v4 {
     		}else{
     			System.out.println("Success!");
     			applicantToResident(ID,conn,choice);
-    			System.out.println("You have succesfully booked an apartment, and are now a resident!");
+    			System.out.println("You have successfully booked an apartment, and are now a resident!");
     			System.out.println("Please login as a resident from the main menu.");
     			return 1;
     		}
@@ -412,7 +412,7 @@ public class Project_v4 {
         System.out.println("1. Manage Residents");
         System.out.println("2. Manage Applicants");
         System.out.println("3. Demographic Studies");
-        System.out.println("4. Manage Maintenace Orders");
+        System.out.println("4. Manage Maintenance Orders");
         System.out.println("5. Administrative Reports");
         System.out.println("6. Quit");
         System.out.print("Please enter the action you wish to take: ");
