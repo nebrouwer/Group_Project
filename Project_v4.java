@@ -110,7 +110,7 @@ public class Project_v4 {
     		p.setString(2,password);
     		ResultSet r = p.executeQuery();
     		String aid=null;
-    		while (r.next ()) {
+    		while(r.next()) {
     			aid = r.getString(1);
     			System.out.println("Thank You for logging in.");
           }
@@ -250,13 +250,14 @@ public class Project_v4 {
     
     static void checkUnitAvailability(Connection conn){
     	try{
-    		String query = "select * from unit where vacant_date < NOW()";
+    		String query = "select * from unit where vacant_date < NOW() and unit_type = ?";
     		PreparedStatement p = conn.prepareStatement (query);
-    		//String id = readEntry("Enter the ID of the apartment type you would like to search for: ");
-    		//p.clearParameters();
-    		//p.setString(1, id);
+    		String id = readEntry("Enter the ID of the apartment type you would like to search for: ");
+    		p.clearParameters();
+    		p.setString(1, id);
     		ResultSet r = p.executeQuery();
     		System.out.println("**Address, Building #, Unit ID, Apt #, Vacant Date**");
+    		System.out.println("----------------------------------------------------");
     		while (r.next ()) {
     			String address=r.getString(1);
     			int building=r.getInt(2);
@@ -265,8 +266,9 @@ public class Project_v4 {
     			String date=r.getString(5);
     			System.out.println(address+", "+building+", "+unit+", "+numb+", "+date);
     		}
+    		System.out.println("----------------------------------------------------");
     	}catch(SQLException ex){ 
-		  	System.out.println("Could not find an account matching that user name and password.");
+		  	System.out.println(ex);
     	}
     }
     
@@ -381,7 +383,7 @@ public class Project_v4 {
     		p2.setString(3, password);
     		p2.executeUpdate();
     	}catch(SQLException ex){
-    		System.out.println(" ");
+    		System.out.println(ex);
     	}
     }
     
