@@ -479,40 +479,31 @@ public class Project_v4 {
 			System.out.println(ex);
 		} catch (IOException e) {
 			e.printStackTrace();
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) { /* ignored */}
-			}
 		}
         System.out.println("Returning to Admin Menu");
     }
 	static void applicantReport(Connection conn) throws SQLException, IOException{
 		Scanner console=new Scanner(System.in);
-		String semester;
 		System.out.println("Please enter a semester date (YYYYMMDD): ");
-		semester = console.nextLine();
-
-		Statement stmt = conn.createStatement();
+		String semester = console.nextLine();
 		String query =  "SELECT person.name, person.address " +
 				"FROM person, applicant " +
 				"WHERE student_id = applicant_id " +
 				"AND application_date <= \'" + semester + "\';";
-
+		PreparedStatement p = conn.prepareStatement (query);
 		ResultSet rset;
-		rset = stmt.executeQuery(query);
+
 
 
 		try {
-			rset = stmt.executeQuery(query);
+			rset = p.executeQuery(query);
 		} catch (SQLException e) {
 			System.out.println("could not execute query ");
 			while (e!= null) {
 				System.out.println ("Message  :" + e.getMessage());
 				e = e.getNextException();
 			}
-			stmt.close();
+			p.close();
 			return;
 		}
 
@@ -525,7 +516,7 @@ public class Project_v4 {
 			System.out.println(rset.getString(2));
 		}
 		System.out.println();
-		stmt.close();
+		p.close();
 
 	}
 }
