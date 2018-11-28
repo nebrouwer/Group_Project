@@ -496,10 +496,10 @@ public class Project_v4 {
 
 		Statement stmt = conn.createStatement();
 		String query =  "SELECT person.name, person.address " +
-				"FROM project.person, project.applicant " +
+				"FROM person, applicant " +
 				"WHERE student_id = applicant_id " +
 				"AND application_date <= \'" + semester + "\';";
-		System.out.println(query);
+
 		ResultSet rset;
 		rset = stmt.executeQuery(query);
 
@@ -516,14 +516,15 @@ public class Project_v4 {
 			return;
 		}
 
-		System.out.println("APPLICANT NAMES AND ADDRESSES FOR NEXT SEMESTER");
+		System.out.println("\nAPPLICANT NAMES AND ADDRESSES FOR NEXT SEMESTER");
 		System.out.println("--------------------------------------------------");
 
 		while(rset.next())
 		{
-			System.out.print(rset.getString(1) + " ");
+			System.out.print(rset.getString(1) + " - ");
 			System.out.println(rset.getString(2));
 		}
+		System.out.println();
 		stmt.close();
 
 	}
