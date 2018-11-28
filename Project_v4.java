@@ -358,17 +358,17 @@ public class Project_v4 {
     
     static void addResident(Connection conn, String ID, String address){
     	try{
-    		String query="select unit_price from unit_type where type_id in(select unit_type from unit where address= ?)";
+    		String query="select unit_price from unit_type where type_id in(select unit_type from unit where unit.address= ?)";
     		PreparedStatement p = conn.prepareStatement (query);
     		p.setString(1, address);
     		ResultSet r = p.executeQuery();
-    		r.next();
+    		//r.next();
     		String price=r.getString(1);
     		String query3="select password from applicant where applicant_id=?";
     		PreparedStatement p3 = conn.prepareStatement (query3);
     		p3.setString(1, ID);
     		ResultSet r3 = p3.executeQuery();
-    		r3.next();
+    		//r3.next();
     		String password=r3.getString(1);
     		String query2="insert into resident values(?,0,?,?)";
     		PreparedStatement p2 = conn.prepareStatement (query2);
