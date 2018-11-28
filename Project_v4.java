@@ -107,7 +107,7 @@ public class Project_v4 {
     		String password = readEntry("Enter password: ");
     		p.clearParameters();
     		p.setString(1,id);
-    		p.setString(2, password);
+    		p.setString(2,password);
     		ResultSet r = p.executeQuery();
     		String aid=null;
     		while (r.next ()) {
@@ -210,7 +210,7 @@ public class Project_v4 {
         while(false==choice.equals("3")){
         	if(true==choice.equals("1")){
         		System.out.println("**You've chosen Check Available Units**");
-        		//printUnitTypes(conn);
+        		printUnitTypes(conn);
         		checkUnitAvailability(conn);
         	}else if(true==choice.equals("2")){
         		System.out.println("You've chosen Submit Booking Requests");
@@ -366,13 +366,13 @@ public class Project_v4 {
     		PreparedStatement p = conn.prepareStatement (query);
     		p.setString(1, address);
     		ResultSet r = p.executeQuery();
-    		//r.next();
+    		r.next();
     		String price=r.getString(1);
     		String query3="select password from applicant where applicant_id=?";
     		PreparedStatement p3 = conn.prepareStatement (query3);
     		p3.setString(1, ID);
     		ResultSet r3 = p3.executeQuery();
-    		//r3.next();
+    		r3.next();
     		String password=r3.getString(1);
     		String query2="insert into resident values(?,0,?,?)";
     		PreparedStatement p2 = conn.prepareStatement (query2);
@@ -381,7 +381,7 @@ public class Project_v4 {
     		p2.setString(3, password);
     		p2.executeUpdate();
     	}catch(SQLException ex){
-    		System.out.println(ex);
+    		System.out.println(" ");
     	}
     }
     
