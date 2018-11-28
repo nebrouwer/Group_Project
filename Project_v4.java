@@ -8,7 +8,7 @@ public class Project_v4 {
         Connection conn = null;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            String url = "jdbc:mysql://localhost:3306/project?serverTimezone=UTC&useSSL=TRUE";
+            String url = "jdbc:mysql://localhost:3306/ProjectAssignment?serverTimezone=UTC&useSSL=TRUE";
             String user, pass;
             user = readEntry("UserId: ");
             pass = readEntry("Password: ");
